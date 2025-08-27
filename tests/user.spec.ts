@@ -1,44 +1,62 @@
-import { test } from "@playwright/test";
-import { UserService } from "../services/userService";
-import assert from "assert";
+import { test, expect } from "@playwright/test";
+import userService from "../resources/services/userService";
+import userData from "../resources/data/userData.json";
 
 test.describe("User API Tests", () => {
 
   test("GET all users", async () => {
-    const data = await UserService.getAllUsers();
-    assert.ok(data.users.length > 0, "Users list should not be empty");
+    const response = await userService.getUsers();
+
+    // assert status code
+    expect(response.status).toBe(200);
+
+    // validate json structure
+    expect(response.data).toHaveProperty("users");
+    expect(Array.isArray(response.data.users)).toBeTruthy();
+    expect(response.data.total).toBeGreaterThan(0);
+
+    // check first user fields
+    const firstUser = response.data.users[0];
+    expect(firstUser).toHaveProperty("id");
+    expect(firstUser).toHaveProperty("firstName");
+    expect(firstUser).toHaveProperty("lastName");
   });
 
-  test("GET user by ID", async () => {
-    const data = await UserService.getUserById(1);
-    assert.strictEqual(data.id, 1);
-  });
+  test("POST create user", async () => {
+    const payload = userData.createUser;
+    const response = await userService.createUser(payload);
 
-  test("SEARCH user", async () => {
-    const data = await UserService.searchUsers("Emily");
-    assert.ok(data.users.some((u: any) => u.firstName === "Emily"));
-  });
-
-  test("POST create new user", async () => {
-    const payload = {
-      firstName: "John",
-      lastName: "Doe",
-      age: 30
-    };
-    const data = await UserService.createUser(payload);
-    assert.strictEqual(data.firstName, "John");
-    assert.strictEqual(data.lastName, "Doe");
+    expect(response.status).toBe(200);
+    expect(response.data.firstName).toBe(payload.firstName);
+    expect(response.data.lastName).toBe(payload.lastName);
+    expect(response.data.age).toBe(payload.age);
+    expect(response.data).toHaveProperty("id"); // id ใหม่ต้องถูกสร้าง
   });
 
   test("PUT update user", async () => {
-    const payload = { lastName: "Updated" };
-    const data = await UserService.updateUser(1, payload);
-    assert.strictEqual(data.lastName, "Updated");
+    // สร้าง user ก่อน
+    const newUser = await userService.createUser(userData.createUser);
+
+    const userId = newUser.data.id;
+    const payload = userData.updateUser;
+
+    const response = await userService.updateUser(userId, payload);
+
+    expect(response.status).toBe(200);
+    expect(response.data.lastName).toBe(payload.lastName);
+    expect(response.data.id).toBe(userId);
   });
 
   test("DELETE user", async () => {
-    const data = await UserService.deleteUser(1);
-    assert.strictEqual(data.isDeleted, true);
+    // สร้าง user ก่อน
+    const newUser = await userService.createUser(userData.createUser);
+    const userId = newUser.data.id;
+
+    const response = await userService.deleteUser(userId);
+
+    expect(response.status).toBe(200);
+    expect(response.data.isDeleted).toBeTruthy();
+    expect(response.data.id).toBe(userId);
   });
 
 });

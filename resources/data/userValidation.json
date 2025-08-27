@@ -1,0 +1,6 @@
+{
+  "userFields": ["id", "firstName", "lastName", "age"],
+  "statusCreated": 200,
+  "statusUpdated": 200,
+  "statusGet": 200
+}

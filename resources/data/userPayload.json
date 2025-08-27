@@ -1,0 +1,10 @@
+{
+  "newUser": {
+    "firstName": "Muhammad",
+    "lastName": "Ovi",
+    "age": 30
+  },
+  "updateUser": {
+    "lastName": "Updated"
+  }
+}

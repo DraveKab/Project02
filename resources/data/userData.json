@@ -1,0 +1,15 @@
+{
+  "createUser": {
+    "firstName": "Muhammad",
+    "lastName": "Ovi",
+    "age": 25
+  },
+  "updateUser": {
+    "lastName": "Updated"
+  },
+  "firstUser": {
+    "id": 1,
+    "firstName": "John"
+  },
+  "searchKeyword": "test"
+}
