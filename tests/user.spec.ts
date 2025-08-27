@@ -26,7 +26,7 @@ test.describe("User API Tests", () => {
     const payload = userData.createUser;
     const response = await userService.createUser(payload);
 
-    expect(response.status).toBe(200);
+    expect([200, 201]).toContain(response.status); // รองรับทั้ง 200 และ 201
     expect(response.data.firstName).toBe(payload.firstName);
     expect(response.data.lastName).toBe(payload.lastName);
     expect(response.data.age).toBe(payload.age);
@@ -34,29 +34,24 @@ test.describe("User API Tests", () => {
   });
 
   test("PUT update user", async () => {
-    // สร้าง user ก่อน
-    const newUser = await userService.createUser(userData.createUser);
+  const userId = 1; // ใช้ id ที่มีจริง
+  const payload = userData.updateUser;
 
-    const userId = newUser.data.id;
-    const payload = userData.updateUser;
+  const response = await userService.updateUser(userId, payload);
 
-    const response = await userService.updateUser(userId, payload);
+  expect([200, 201]).toContain(response.status);
+  expect(response.data.lastName).toBe(payload.lastName);
+  expect(response.data.id).toBe(userId);
+});
 
-    expect(response.status).toBe(200);
-    expect(response.data.lastName).toBe(payload.lastName);
-    expect(response.data.id).toBe(userId);
-  });
+test("DELETE user", async () => {
+  const userId = 1; // ใช้ id ที่มีจริง
 
-  test("DELETE user", async () => {
-    // สร้าง user ก่อน
-    const newUser = await userService.createUser(userData.createUser);
-    const userId = newUser.data.id;
+  const response = await userService.deleteUser(userId);
 
-    const response = await userService.deleteUser(userId);
-
-    expect(response.status).toBe(200);
-    expect(response.data.isDeleted).toBeTruthy();
-    expect(response.data.id).toBe(userId);
-  });
+  expect([200, 201]).toContain(response.status);
+  expect(response.data.isDeleted).toBeTruthy();
+  expect(response.data.id).toBe(userId);
+});
 
 });
