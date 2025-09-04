@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 import axios, { AxiosResponse } from "axios";
 
 // อ่าน base url จาก env (ถ้าไม่มีใช้ dummyjson เป็นค่า default)
@@ -26,6 +27,15 @@ class UserService {
 
   async deleteUser(id: number): Promise<AxiosResponse> {
     return axios.delete(`${BASE_URL}/users/${id}`);
+  }
+
+  /**
+   * ✅ helper function สำหรับตรวจสอบ property ของ user object
+   */
+  validateUserProperties(user: any) {
+    expect(user).toHaveProperty("id");
+    expect(user).toHaveProperty("firstName");
+    expect(user).toHaveProperty("lastName");
   }
 }
 
